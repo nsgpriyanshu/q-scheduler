@@ -1,36 +1,22 @@
-[build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "adaptive-cpu-scheduler"
 version = "0.1.0"
-description = "An adaptive AI-based CPU scheduler for evaluating workload-aware scheduling against traditional CPU scheduling algorithms."
-readme = "README.md"
+description = "Adaptive AI-based CPU Scheduler"
 requires-python = ">=3.11"
+
 authors = [
     { name = "nsgpriyanshu" }
 ]
+
 license = { text = "Apache-2.0" }
 
 dependencies = [
-    "numpy",
+    "streamlit",
     "pandas",
+    "numpy",
     "scikit-learn",
-    "scipy",
     "matplotlib",
     "plotly",
-    "streamlit"
-]
-
-[project.optional-dependencies]
-dev = [
+    "scipy",
     "pytest"
 ]
-
-[project.urls]
-Repository = "https://github.com/nsgpriyanshu/adaptive-cpu-scheduler"
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
