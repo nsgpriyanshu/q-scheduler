@@ -3,18 +3,20 @@ from __future__ import annotations
 from typing import Any
 import pandas as pd
 
+from scheduler.adaptive import adaptive_scheduler
 from scheduler.core import Process, summarize_results
 from scheduler.fcfs import fcfs
-from scheduler.sjf import sjf
-from scheduler.srtf import srtf
 from scheduler.priority import priority
 from scheduler.priority_preemptive import priority_preemptive
 from scheduler.round_robin import round_robin
+from scheduler.sjf import sjf
+from scheduler.srtf import srtf
 
 
 def run_target_simulations(processes: list[Process], quantum: float = 2.0) -> dict[str, dict[str, Any]]:
-    """Run simulations for FCFS, SJF (Non-preemptive & Preemptive), Priority (Non-preemptive & Preemptive), and Round Robin."""
+    """Run simulations for Adaptive Q-Scheduler (AI), FCFS, SJF (Non-preemptive & Preemptive), Priority (Non-preemptive & Preemptive), and Round Robin."""
     schedulers = {
+        "Adaptive Q-Scheduler (AI)": lambda procs: adaptive_scheduler(procs),
         "FCFS": lambda procs: fcfs(procs),
         "SJF (Non-preemptive)": lambda procs: sjf(procs),
         "SJF (Preemptive)": lambda procs: srtf(procs),
@@ -32,9 +34,14 @@ def run_target_simulations(processes: list[Process], quantum: float = 2.0) -> di
         if isinstance(res, dict):
             results = res.get("results", [])
             timeline = res.get("timeline", [])
+            extra = {k: v for k, v in res.items() if k not in ("results", "timeline")}
         else:
             results = res
             timeline = getattr(res, "timeline", [])
+            extra = {
+                "policy_used": getattr(res, "policy_used", name),
+                "classification": getattr(res, "classification", None),
+            }
 
         summary = summarize_results(results, timeline)
         
@@ -42,13 +49,14 @@ def run_target_simulations(processes: list[Process], quantum: float = 2.0) -> di
             "results": results,
             "timeline": timeline,
             "summary": summary,
+            "extra": extra,
         }
 
     return simulation_data
 
 
 def run_all_simulations(processes: list[Process], quantum: float = 2.0) -> dict[str, dict[str, Any]]:
-    """Backward compatible helper function for running simulations."""
+    """Helper function for running all simulations."""
     return run_target_simulations(processes, quantum=quantum)
 
 

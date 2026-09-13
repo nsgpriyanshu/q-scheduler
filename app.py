@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 
 from scheduler.core import Process
 from metrics.performance import run_target_simulations, build_comparison_dataframe
+from ai.classifier import classify_workload
 
 # ==========================================
 # 1. STREAMLIT PAGE CONFIG & THEME SETUP
@@ -43,7 +44,7 @@ st.markdown(
             border-right: 1px solid {BORDER_COLOR};
         }}
         
-        /* Force Text Visibility for Text & Headings */
+        /* Force Text Visibility */
         .stMarkdown, .stText, label, p, h1, h2, h3, h4, h5, h6 {{
             color: {TEXT_COLOR} !important;
             font-family: Arial, sans-serif !important;
@@ -79,7 +80,7 @@ st.markdown(
             font-family: Arial, sans-serif !important;
         }}
         .metric-value {{
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: {TEXT_COLOR} !important;
             font-family: Arial, sans-serif !important;
@@ -113,7 +114,7 @@ def get_plotly_dark_layout(title: str = "", height: int = 380):
         title=dict(text=title, font=dict(size=15, color=TEXT_COLOR, family="Arial")),
         paper_bgcolor=CARD_BG,
         plot_bgcolor=CARD_BG,
-        margin=dict(l=40, r=40, t=40, b=40),
+        margin=dict(l=30, r=30, t=40, b=30),
         height=height,
         font=dict(color=TEXT_COLOR, family="Arial"),
         xaxis=dict(
@@ -142,7 +143,7 @@ def get_plotly_dark_layout(title: str = "", height: int = 380):
 # ==========================================
 with st.sidebar:
     st.markdown("## Q-Shedular")
-    st.caption("CPU Scheduling Simulator")
+    st.caption("AI Adaptive CPU Scheduling Engine")
     st.divider()
 
     st.markdown("### Process Inputs")
@@ -162,7 +163,7 @@ with st.sidebar:
             pid = f"P{i+1}"
             def_arr = default_arrivals[i] if i < len(default_arrivals) else float(i * 2)
             def_burst = default_bursts[i] if i < len(default_bursts) else 5.0
-            def_prio = default_prios[i] if i < len(default_prios) else 1
+            def_prio = default_prios[i] if i < len(default_prios) else 0
 
             col_a, col_b, col_c = st.columns(3)
             with col_a:
@@ -184,7 +185,7 @@ with st.sidebar:
             with col_c:
                 prio = st.number_input(
                     f"{pid} Priority",
-                    min_value=1,
+                    min_value=0,
                     value=int(def_prio),
                     step=1,
                     key=f"prio_{i}",
@@ -199,7 +200,7 @@ with st.sidebar:
                     "pid": f"P{i+1}",
                     "arrival_time": float(i * 1.0),
                     "burst_time": float(6 - i if i < 4 else 4),
-                    "priority": int((i % 4) + 1),
+                    "priority": int(i % 4),
                 }
                 for i in range(int(num_processes))
             ]
@@ -212,7 +213,7 @@ with st.sidebar:
                         pid=str(row["pid"]),
                         arrival_time=float(row["arrival_time"]),
                         burst_time=float(row["burst_time"]),
-                        priority=int(row.get("priority", 1)),
+                        priority=int(row.get("priority", 0)),
                     )
                 )
 
@@ -225,14 +226,10 @@ if not processes:
     st.warning("Please define at least one process to run simulations.")
     st.stop()
 
-# Run target simulations for FCFS, SJF (Preemptive/Non-preemptive), Priority (Preemptive/Non-preemptive), and Round Robin
+# Run target simulations
 simulations = run_target_simulations(processes, quantum=rr_quantum)
 comparison_df = build_comparison_dataframe(simulations)
-
-sorted_df = comparison_df.sort_values(by="Avg Turnaround Time")
-best_algo = sorted_df.iloc[0]["Algorithm"]
-best_turnaround = sorted_df.iloc[0]["Avg Turnaround Time"]
-best_waiting = sorted_df.iloc[0]["Avg Waiting Time"]
+ai_classification = classify_workload(processes)
 
 
 # ==========================================
@@ -240,31 +237,111 @@ best_waiting = sorted_df.iloc[0]["Avg Waiting Time"]
 # ==========================================
 st.title("Q-Shedular")
 st.markdown(
-    "Simulating FCFS, SJF (Non-preemptive & Preemptive), Priority (Non-preemptive & Preemptive), and Round Robin algorithms."
+    "AI-Powered Adaptive CPU Scheduling Platform comparing AI prediction against FCFS, SJF (Preemptive/Non-preemptive), Priority (Preemptive/Non-preemptive), and Round Robin."
 )
 st.write("")
-
-# KPI Metrics Row (Commented out as requested)
-# c1, c2, c3, c4 = st.columns(4)
-# with c1:
-#     st.markdown(...)
-# ...
 
 
 # ==========================================
 # 4. DASHBOARD TABS
 # ==========================================
-tab1, tab2, tab3 = st.tabs(["Metrics Comparison", "Execution Gantt Timeline", "Detailed Process Data"])
+tab_ai, tab1, tab2, tab3 = st.tabs(
+    [
+        "AI Adaptive Insights",
+        "Metrics Comparison",
+        "Execution Gantt Timeline",
+        "Detailed Process Data",
+    ]
+)
 
 # Standard Streamlit Color Palette for Schedulers
 ALGO_COLORS = [
+    "#5856D6",  # Adaptive Q-Scheduler (Indigo)
     "#0068C9",  # FCFS (Blue)
     "#83C5BE",  # SJF Non-preemptive (Teal)
-    "#36B37E",  # SJF Preemptive / SRTF (Green)
+    "#36B37E",  # SJF Preemptive (Green)
     "#A55EEA",  # Priority Non-preemptive (Purple)
     "#FF4B4B",  # Priority Preemptive (Red)
     "#FF9F43",  # Round Robin (Orange)
 ]
+
+
+# ------------------------------------------
+# TAB AI: ADAPTIVE AI PREDICTION INSIGHTS
+# ------------------------------------------
+with tab_ai:
+    st.subheader("AI Workload Classification & Policy Prediction")
+
+    ac1, ac2, ac3 = st.columns(3)
+    with ac1:
+        st.markdown(
+            f"""
+            <div class='metric-card'>
+                <div class='metric-title'>AI Selected Policy</div>
+                <div class='metric-value' style='color:#58A6FF;'>{ai_classification['selected_policy']}</div>
+                <div class='metric-sub'>Optimal Predicted Algorithm</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with ac2:
+        st.markdown(
+            f"""
+            <div class='metric-card'>
+                <div class='metric-title'>Prediction Confidence</div>
+                <div class='metric-value' style='color:#36B37E;'>{ai_classification['confidence']:.1f}%</div>
+                <div class='metric-sub'>Scikit-Learn Random Forest Model</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with ac3:
+        st.markdown(
+            f"""
+            <div class='metric-card'>
+                <div class='metric-title'>Dynamic RR Quantum</div>
+                <div class='metric-value' style='color:#FF9F43;'>{ai_classification['dynamic_quantum']:.1f} ms</div>
+                <div class='metric-sub'>Calculated from Mean Burst</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        f"""
+        <div style='background-color:#161B22; border-left:4px solid #5856D6; padding:14px; border-radius:6px; margin:10px 0;'>
+            <strong>AI Prediction Rationale:</strong><br>
+            {ai_classification['reasoning']}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    col_fi1, col_fi2 = st.columns(2)
+
+    with col_fi1:
+        st.subheader("Workload Feature Vector")
+        feat_df = pd.DataFrame([ai_classification["features"].to_dict()])
+        st.dataframe(feat_df.T.rename(columns={0: "Feature Value"}), use_container_width=True)
+
+    with col_fi2:
+        st.subheader("ML Feature Importance Ranking")
+        importances_dict = ai_classification["feature_importances"]
+        fi_df = pd.DataFrame(
+            {"Feature": list(importances_dict.keys()), "Importance": list(importances_dict.values())}
+        ).sort_values(by="Importance", ascending=True)
+
+        fig_fi = px.bar(
+            fi_df,
+            x="Importance",
+            y="Feature",
+            orientation="h",
+            title="Random Forest Feature Importance",
+            color_discrete_sequence=["#0068C9"],
+        )
+        fig_fi.update_layout(get_plotly_dark_layout("Random Forest Feature Importance", height=320))
+        st.plotly_chart(fig_fi, use_container_width=True)
+
 
 # ------------------------------------------
 # TAB 1: METRICS COMPARISON
