@@ -18,12 +18,14 @@ st.set_page_config(
 )
 
 # Custom CSS for Dark Theme with Sidebar Slightly Darker than Main BG
-MAIN_BG = "#0E1117"
-SIDEBAR_BG = "#06080D"
-CARD_BG = "#161B22"
-BORDER_COLOR = "#30363D"
-TEXT_COLOR = "#FAFAFA"
-SECONDARY_TEXT = "#8B949E"
+MAIN_BG = "#09090b"
+SIDEBAR_BG = "#171717"
+CARD_BG = "#171717"
+BORDER_COLOR = "#404040"
+TEXT_COLOR = "#f5f5f5"
+SECONDARY_TEXT = "#d4d4d4"
+
+
 
 st.markdown(
     f"""
@@ -87,9 +89,15 @@ st.markdown(
         }}
         .metric-sub {{
             font-size: 12px;
-            color: #58A6FF !important;
+            color: #60a5fa !important;
             margin-top: 4px;
             font-family: Arial, sans-serif !important;
+        }}
+
+        /* Softly rounded Plotly chart corners */
+        [data-testid="stPlotlyChart"] > div {{
+            border-radius: 8px;
+            overflow: hidden;
         }}
 
         /* Clean Tabs Styling */
@@ -118,13 +126,13 @@ def get_plotly_dark_layout(title: str = "", height: int = 380):
         height=height,
         font=dict(color=TEXT_COLOR, family="Arial"),
         xaxis=dict(
-            gridcolor="#21262D",
+            gridcolor="#171717",
             linecolor=BORDER_COLOR,
             tickfont=dict(color=SECONDARY_TEXT, family="Arial"),
             title_font=dict(color=SECONDARY_TEXT, family="Arial"),
         ),
         yaxis=dict(
-            gridcolor="#21262D",
+            gridcolor="#171717",
             linecolor=BORDER_COLOR,
             tickfont=dict(color=SECONDARY_TEXT, family="Arial"),
             title_font=dict(color=SECONDARY_TEXT, family="Arial"),
@@ -256,13 +264,13 @@ tab_ai, tab1, tab2, tab3 = st.tabs(
 
 # Standard Streamlit Color Palette for Schedulers
 ALGO_COLORS = [
-    "#5856D6",  # Adaptive Q-Scheduler (Indigo)
-    "#0068C9",  # FCFS (Blue)
-    "#83C5BE",  # SJF Non-preemptive (Teal)
-    "#36B37E",  # SJF Preemptive (Green)
-    "#A55EEA",  # Priority Non-preemptive (Purple)
-    "#FF4B4B",  # Priority Preemptive (Red)
-    "#FF9F43",  # Round Robin (Orange)
+    "#f43f5e",  # Adaptive Q-Scheduler (Rose)
+    "#6366f1",  # FCFS (Indigo)
+    "#10b981",  # SJF Non-preemptive (Teal)
+    "#f59e0b",  # SJF Preemptive (Amber)
+    "#a855f7",  # Priority Non-preemptive (Purple)
+    "#ec4899",  # Priority Preemptive (Pink)
+    "#eab308",  # Round Robin (Yellow)
 ]
 
 
@@ -278,7 +286,7 @@ with tab_ai:
             f"""
             <div class='metric-card'>
                 <div class='metric-title'>AI Selected Policy</div>
-                <div class='metric-value' style='color:#58A6FF;'>{ai_classification['selected_policy']}</div>
+                <div class='metric-value' style='color:#60a5fa;'>{ai_classification['selected_policy']}</div>
                 <div class='metric-sub'>Optimal Predicted Algorithm</div>
             </div>
             """,
@@ -307,22 +315,14 @@ with tab_ai:
             unsafe_allow_html=True,
         )
 
-    st.markdown(
-        f"""
-        <div style='background-color:#161B22; border-left:4px solid #5856D6; padding:14px; border-radius:6px; margin:10px 0;'>
-            <strong>AI Prediction Rationale:</strong><br>
-            {ai_classification['reasoning']}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.info(f"AI Prediction Rationale: {ai_classification['reasoning']}")
 
     col_fi1, col_fi2 = st.columns(2)
 
     with col_fi1:
         st.subheader("Workload Feature Vector")
         feat_df = pd.DataFrame([ai_classification["features"].to_dict()])
-        st.dataframe(feat_df.T.rename(columns={0: "Feature Value"}), use_container_width=True)
+        st.dataframe(feat_df.T.rename(columns={0: "Feature Value"}), width="stretch")
 
     with col_fi2:
         st.subheader("ML Feature Importance Ranking")
@@ -337,10 +337,10 @@ with tab_ai:
             y="Feature",
             orientation="h",
             title="Random Forest Feature Importance",
-            color_discrete_sequence=["#0068C9"],
+            color_discrete_sequence=["#2563eb"],
         )
         fig_fi.update_layout(get_plotly_dark_layout("Random Forest Feature Importance", height=320))
-        st.plotly_chart(fig_fi, use_container_width=True)
+        st.plotly_chart(fig_fi, width="stretch")
 
 
 # ------------------------------------------
@@ -358,7 +358,7 @@ with tab1:
                 x=comparison_df["Algorithm"],
                 y=comparison_df["Avg Waiting Time"],
                 name="Avg Waiting Time",
-                marker_color="#0068C9",
+                marker_color="#2563eb",
             )
         )
         fig_times.add_trace(
@@ -366,7 +366,7 @@ with tab1:
                 x=comparison_df["Algorithm"],
                 y=comparison_df["Avg Turnaround Time"],
                 name="Avg Turnaround Time",
-                marker_color="#83C5BE",
+                marker_color="#22c55e",
             )
         )
         fig_times.add_trace(
@@ -374,14 +374,14 @@ with tab1:
                 x=comparison_df["Algorithm"],
                 y=comparison_df["Avg Response Time"],
                 name="Avg Response Time",
-                marker_color="#FF4B4B",
+                marker_color="#f43f5e",
             )
         )
 
         layout_times = get_plotly_dark_layout("Average Scheduling Metrics (Lower is Better)", height=400)
         layout_times["barmode"] = "group"
         fig_times.update_layout(layout_times)
-        st.plotly_chart(fig_times, use_container_width=True)
+        st.plotly_chart(fig_times, width="stretch")
 
     with col2:
         fig_util = go.Figure()
@@ -390,13 +390,13 @@ with tab1:
                 x=comparison_df["Algorithm"],
                 y=comparison_df["CPU Utilization (%)"],
                 name="CPU Utilization (%)",
-                marker_color="#36B37E",
+                marker_color="#dbeafe",
                 text=comparison_df["CPU Utilization (%)"].apply(lambda v: f"{v}%"),
                 textposition="auto",
             )
         )
         fig_util.update_layout(get_plotly_dark_layout("CPU Utilization (%)", height=400))
-        st.plotly_chart(fig_util, use_container_width=True)
+        st.plotly_chart(fig_util, width="stretch")
 
     st.subheader("Per-Process Waiting Time Breakdown")
     proc_df_list = []
@@ -422,7 +422,7 @@ with tab1:
         color_discrete_sequence=ALGO_COLORS,
     )
     fig_proc.update_layout(get_plotly_dark_layout("Per-Process Waiting Time Comparison", height=400))
-    st.plotly_chart(fig_proc, use_container_width=True)
+    st.plotly_chart(fig_proc, width="stretch")
 
 
 # ------------------------------------------
@@ -462,7 +462,7 @@ with tab2:
         layout_gantt = get_plotly_dark_layout("Execution Timeline (Time Units)", height=450)
         layout_gantt["xaxis"]["title"] = "Time Units"
         fig_gantt.update_layout(layout_gantt)
-        st.plotly_chart(fig_gantt, use_container_width=True)
+        st.plotly_chart(fig_gantt, width="stretch")
     else:
         st.info("No timeline data available.")
 
@@ -472,7 +472,7 @@ with tab2:
 # ------------------------------------------
 with tab3:
     st.subheader("Simulation Results Data Table")
-    st.dataframe(comparison_df, use_container_width=True)
+    st.dataframe(comparison_df, width="stretch")
 
     csv_data = comparison_df.to_csv(index=False).encode("utf-8")
     st.download_button(
@@ -487,4 +487,4 @@ with tab3:
     st.subheader("Per-Algorithm Detailed Traces")
     selected_algo = st.selectbox("Select Algorithm", options=list(simulations.keys()))
     if selected_algo:
-        st.dataframe(pd.DataFrame(simulations[selected_algo]["results"]), use_container_width=True)
+        st.dataframe(pd.DataFrame(simulations[selected_algo]["results"]), width="stretch")

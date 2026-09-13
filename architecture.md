@@ -99,3 +99,9 @@ Provides interactive Streamlit UI with:
 - AI Prediction Insights tab
 - Plotly Bar Charts and Execution Gantt Timeline
 - CSV Export function
+
+### 7. Run Command
+To launch the Q-Shedular dashboard, run:
+```powershell
+.venv\Scripts\streamlit.exe run app.py
+```
