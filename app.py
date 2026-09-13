@@ -17,13 +17,13 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS for Dark Theme with Sidebar Slightly Darker than Main BG
-MAIN_BG = "#09090b"
-SIDEBAR_BG = "#171717"
-CARD_BG = "#171717"
-BORDER_COLOR = "#404040"
-TEXT_COLOR = "#f5f5f5"
-SECONDARY_TEXT = "#d4d4d4"
+# Custom CSS for a light theme with a slightly brighter sidebar
+MAIN_BG = "#fafafa"
+SIDEBAR_BG = "#f5f5f5"
+CARD_BG = "#f5f5f5"
+BORDER_COLOR = "#d4d4d4"
+TEXT_COLOR = "#0a0a0a"
+SECONDARY_TEXT = "#262626"
 
 
 
@@ -44,6 +44,14 @@ st.markdown(
         section[data-testid="stSidebar"] {{
             background-color: {SIDEBAR_BG};
             border-right: 1px solid {BORDER_COLOR};
+        }}
+
+        section[data-testid="stSidebar"] input,
+        section[data-testid="stSidebar"] textarea,
+        section[data-testid="stSidebar"] [data-baseweb="select"] > div {{
+            background-color: {CARD_BG};
+            color: {TEXT_COLOR};
+            border-color: {BORDER_COLOR};
         }}
         
         /* Force Text Visibility */
@@ -89,7 +97,7 @@ st.markdown(
         }}
         .metric-sub {{
             font-size: 12px;
-            color: #60a5fa !important;
+            color: #2563eb !important;
             margin-top: 4px;
             font-family: Arial, sans-serif !important;
         }}
@@ -108,7 +116,7 @@ st.markdown(
             font-family: Arial, sans-serif !important;
         }}
         button[aria-selected="true"] p {{
-            color: #FF4B4B !important;
+            color: #2563eb !important;
         }}
     </style>
     """,
@@ -117,7 +125,7 @@ st.markdown(
 
 
 def get_plotly_dark_layout(title: str = "", height: int = 380):
-    """Return Plotly layout configuration with Arial font and dark theme styling."""
+    """Return Plotly layout configuration with Arial font and light theme styling."""
     return dict(
         title=dict(text=title, font=dict(size=15, color=TEXT_COLOR, family="Arial")),
         paper_bgcolor=CARD_BG,
@@ -126,19 +134,19 @@ def get_plotly_dark_layout(title: str = "", height: int = 380):
         height=height,
         font=dict(color=TEXT_COLOR, family="Arial"),
         xaxis=dict(
-            gridcolor="#171717",
+            gridcolor="#e2e8f0",
             linecolor=BORDER_COLOR,
             tickfont=dict(color=SECONDARY_TEXT, family="Arial"),
             title_font=dict(color=SECONDARY_TEXT, family="Arial"),
         ),
         yaxis=dict(
-            gridcolor="#171717",
+            gridcolor="#e2e8f0",
             linecolor=BORDER_COLOR,
             tickfont=dict(color=SECONDARY_TEXT, family="Arial"),
             title_font=dict(color=SECONDARY_TEXT, family="Arial"),
         ),
         legend=dict(
-            bgcolor="rgba(22, 27, 34, 0.8)",
+            bgcolor="rgba(255, 255, 255, 0.9)",
             bordercolor=BORDER_COLOR,
             borderwidth=1,
             font=dict(color=TEXT_COLOR, family="Arial"),
@@ -264,13 +272,13 @@ tab_ai, tab1, tab2, tab3 = st.tabs(
 
 # Standard Streamlit Color Palette for Schedulers
 ALGO_COLORS = [
-    "#f43f5e",  # Adaptive Q-Scheduler (Rose)
-    "#6366f1",  # FCFS (Indigo)
-    "#10b981",  # SJF Non-preemptive (Teal)
-    "#f59e0b",  # SJF Preemptive (Amber)
-    "#a855f7",  # Priority Non-preemptive (Purple)
-    "#ec4899",  # Priority Preemptive (Pink)
-    "#eab308",  # Round Robin (Yellow)
+    "#fb7185",  # Adaptive Q-Scheduler (Rose)
+    "#818cf8",  # FCFS (Indigo)
+    "#2dd4bf",  # SJF Non-preemptive (Teal)
+    "#fbbf24",  # SJF Preemptive (Amber)
+    "#c084fc",  # Priority Non-preemptive (Purple)
+    "#f472b6",  # Priority Preemptive (Pink)
+    "#facc15",  # Round Robin (Yellow)
 ]
 
 
@@ -286,7 +294,7 @@ with tab_ai:
             f"""
             <div class='metric-card'>
                 <div class='metric-title'>AI Selected Policy</div>
-                <div class='metric-value' style='color:#60a5fa;'>{ai_classification['selected_policy']}</div>
+                <div class='metric-value' style='color:#2563eb;'>{ai_classification['selected_policy']}</div>
                 <div class='metric-sub'>Optimal Predicted Algorithm</div>
             </div>
             """,
@@ -297,7 +305,7 @@ with tab_ai:
             f"""
             <div class='metric-card'>
                 <div class='metric-title'>Prediction Confidence</div>
-                <div class='metric-value' style='color:#36B37E;'>{ai_classification['confidence']:.1f}%</div>
+                <div class='metric-value' style='color:#059669;'>{ai_classification['confidence']:.1f}%</div>
                 <div class='metric-sub'>Scikit-Learn Random Forest Model</div>
             </div>
             """,
@@ -308,7 +316,7 @@ with tab_ai:
             f"""
             <div class='metric-card'>
                 <div class='metric-title'>Dynamic RR Quantum</div>
-                <div class='metric-value' style='color:#FF9F43;'>{ai_classification['dynamic_quantum']:.1f} ms</div>
+                <div class='metric-value' style='color:#d97706;'>{ai_classification['dynamic_quantum']:.1f} ms</div>
                 <div class='metric-sub'>Calculated from Mean Burst</div>
             </div>
             """,
@@ -358,7 +366,7 @@ with tab1:
                 x=comparison_df["Algorithm"],
                 y=comparison_df["Avg Waiting Time"],
                 name="Avg Waiting Time",
-                marker_color="#2563eb",
+                marker_color="#60a5fa",
             )
         )
         fig_times.add_trace(
@@ -366,7 +374,7 @@ with tab1:
                 x=comparison_df["Algorithm"],
                 y=comparison_df["Avg Turnaround Time"],
                 name="Avg Turnaround Time",
-                marker_color="#22c55e",
+                marker_color="#4ade80",
             )
         )
         fig_times.add_trace(
@@ -374,7 +382,7 @@ with tab1:
                 x=comparison_df["Algorithm"],
                 y=comparison_df["Avg Response Time"],
                 name="Avg Response Time",
-                marker_color="#f43f5e",
+                marker_color="#f87171",
             )
         )
 
@@ -390,7 +398,7 @@ with tab1:
                 x=comparison_df["Algorithm"],
                 y=comparison_df["CPU Utilization (%)"],
                 name="CPU Utilization (%)",
-                marker_color="#dbeafe",
+                marker_color="#404040",
                 text=comparison_df["CPU Utilization (%)"].apply(lambda v: f"{v}%"),
                 textposition="auto",
             )

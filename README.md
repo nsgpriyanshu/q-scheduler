@@ -29,10 +29,12 @@ In real-life production environments (such as the Linux Kernel, Kubernetes conta
 ```
 
 ### 1. Pre-Trained Machine Learning Model
+
 - **Offline Training**: Q-Shedular uses a **pre-trained Machine Learning Classifier** (Random Forest / Decision Tree) trained offline on millions of benchmark CPU execution traces across CPU-bound, I/O-bound, interactive, and priority-skewed scenarios.
 - **Sub-Millisecond Inference**: The pre-trained model weights are serialized and loaded into memory at startup. When a new batch of process threads arrives, model inference takes less than a microsecond, eliminating runtime latency overhead.
 
 ### 2. Kernel Telemetry Subsystem (eBPF / `/proc` / PCB)
+
 - In a real OS (e.g. Linux Kernel `sched` subsystem), **eBPF (Extended Berkeley Packet Filter)** probes and Process Control Block (PCB) counters continuously sample process metrics without interrupting task execution:
   - Historical CPU burst lengths
   - I/O wait duration ratio
@@ -40,11 +42,13 @@ In real-life production environments (such as the Linux Kernel, Kubernetes conta
   - Task arrival frequency
 
 ### 3. Dynamic Dispatcher Policy Switcher
+
 - The kernel dispatcher queries the pre-trained ML model with the current feature vector.
 - The model outputs the optimal scheduling policy (e.g., Shortest Remaining Time First for bursty workloads or Multi-Level Time Slicing for interactive tasks).
 - The kernel dispatcher dynamically assigns ready processes to the corresponding scheduling queues **in real time**, without requiring OS reboots or thread restarts.
 
 ### 4. Continuous Online Reinforcement & Retraining
+
 - Operating system metrics (average waiting time, cache miss rates, context switch overhead) are monitored continuously.
 - If system workload patterns shift over time (e.g., moving from web serving to heavy compilation), telemetry logs feed into an asynchronous background retraining pipeline to update the model weights dynamically.
 
@@ -65,7 +69,9 @@ In real-life production environments (such as the Linux Kernel, Kubernetes conta
 ```
 
 ### Step 1: Feature Vector Extraction
+
 When processes are loaded into the scheduler, Q-Shedular computes a 9-dimensional statistical feature vector:
+
 1. **Mean Burst Time ($\mu$)**: Average processing burst duration across all tasks.
 2. **Burst Coefficient of Variation ($CV = \sigma / \mu$)**: Quantifies burst time heterogeneity. High CV indicates a mixture of tiny and huge tasks.
 3. **Priority Standard Deviation**: Measures priority variance across tasks.
@@ -74,7 +80,9 @@ When processes are loaded into the scheduler, Q-Shedular computes a 9-dimensiona
 6. **Input/Output Ratio**: Proportion of I/O wait relative to CPU execution time.
 
 ### Step 2: Machine Learning Classification & Parameter Tuning
+
 The extracted feature vector is evaluated by a trained Scikit-Learn **Random Forest Model**. The model predicts:
+
 - The optimal scheduling policy minimizing Average Turnaround Time.
 - The prediction confidence percentage (%).
 - The dynamically tuned Round Robin time quantum ($\text{Quantum} = \max(1.0, \text{round}(\mu \times 0.4, 1))$).
@@ -84,6 +92,7 @@ The extracted feature vector is evaluated by a trained Scikit-Learn **Random For
 ### Detailed Sample Scenarios
 
 #### Scenario A: High Burst Variance (Bursty Workload)
+
 - **Input Workload**:
   - `P1`: Arrival = 0.0, Burst = 1.0 ms, Priority = 3
   - `P2`: Arrival = 1.0, Burst = 22.0 ms, Priority = 2
@@ -96,6 +105,7 @@ The extracted feature vector is evaluated by a trained Scikit-Learn **Random For
   - **Rationale**: High burst variation causes convoy effects in FCFS. Preemptive Shortest Job First schedules short tasks ($P1, P3$) immediately, reducing overall queue waiting time.
 
 #### Scenario B: Skewed Priority Distribution
+
 - **Input Workload**:
   - `P1`: Arrival = 0.0, Burst = 10.0 ms, Priority = 4 (Low Importance)
   - `P2`: Arrival = 1.0, Burst = 4.0 ms, Priority = 1 (High Importance)
@@ -107,6 +117,7 @@ The extracted feature vector is evaluated by a trained Scikit-Learn **Random For
   - **Rationale**: High priority variation requires preemption of low-priority tasks when critical high-priority tasks arrive ($P2, P3$).
 
 #### Scenario C: Uniform Interactive Workload
+
 - **Input Workload**:
   - `P1`: Arrival = 0.0, Burst = 4.0 ms, Priority = 1
   - `P2`: Arrival = 1.0, Burst = 4.0 ms, Priority = 1
@@ -141,7 +152,9 @@ The core innovation of **Q-Shedular** is an Machine Learning classification pipe
 ```
 
 ### 1. Workload Feature Vector
+
 For every incoming batch of process tasks, Q-Shedular extracts statistical metrics:
+
 - **Mean Burst Time ($\mu$)**: Average processing burst duration.
 - **Coefficient of Variation ($CV = \sigma / \mu$)**: Burst time heterogeneity index.
 - **Priority Standard Deviation**: Spread of process priority levels.
@@ -149,6 +162,7 @@ For every incoming batch of process tasks, Q-Shedular extracts statistical metri
 - **Input/Output Ratio**: Ratio of I/O burst time to CPU burst time.
 
 ### 2. Machine Learning Prediction Engine
+
 - **Model**: Scikit-Learn `RandomForestClassifier` trained on benchmark CPU scheduling datasets.
 - **Output**: Predicts optimal scheduling policy (FCFS, SJF Non-preemptive, SJF Preemptive/SRTF, Priority Non-preemptive, Priority Preemptive, or Round Robin) with a prediction confidence percentage.
 - **Dynamic Parameter Tuning**: Automatically computes the optimal Round Robin time quantum based on the workload's mean burst profile.
@@ -158,6 +172,7 @@ For every incoming batch of process tasks, Q-Shedular extracts statistical metri
 ## Performance Metrics & Evaluation
 
 Q-Shedular is benchmarked against all classical scheduling policies across measurable operating metrics:
+
 - **Average Waiting Time**
 - **Average Turnaround Time**
 - **Average Response Time**

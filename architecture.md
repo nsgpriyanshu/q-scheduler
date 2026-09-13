@@ -3,6 +3,7 @@
 ## 1. Project Purpose
 
 This project implements **Q-Shedular**, an AI-powered adaptive CPU scheduler that selects the best scheduling policy based on workload characteristics. It compares adaptive AI scheduling against standard algorithms:
+
 - First-Come First-Served (FCFS)
 - Shortest Job First (SJF Non-preemptive)
 - Shortest Remaining Time First (SJF Preemptive / SRTF)
@@ -55,10 +56,13 @@ This project implements **Q-Shedular**, an AI-powered adaptive CPU scheduler tha
 ## 3. Core Components
 
 ### 1. Workload Layer (`workloads/generator.py`)
+
 Generates synthetic and custom process workloads with key process properties: `pid`, `arrival_time`, `burst_time`, `priority`, `io_burst`.
 
 ### 2. Feature Extraction Layer (`ai/feature_extractor.py`)
+
 Extracts numerical feature vectors from workload batches:
+
 - `mean_burst`: Mean CPU burst duration
 - `std_burst`: Standard deviation of CPU bursts
 - `cv_burst`: Coefficient of Variation ($\sigma / \mu$)
@@ -69,12 +73,15 @@ Extracts numerical feature vectors from workload batches:
 - `io_ratio`: I/O burst intensity
 
 ### 3. Machine Learning Classification Layer (`ai/classifier.py`)
+
 - **Model**: Scikit-Learn `RandomForestClassifier` and `DecisionTreeClassifier`.
 - **Training**: Trained on synthetic CPU scheduling datasets to map workload features to the optimal policy that minimizes average turnaround time.
 - **Inference**: Returns predicted optimal algorithm, prediction confidence percentage, and feature importance rankings.
 
 ### 4. Scheduler Execution Layer (`scheduler/`)
+
 Contains common-contract implementations for all baseline scheduling policies:
+
 - `fcfs.py`: FCFS Non-preemptive
 - `sjf.py`: SJF Non-preemptive
 - `srtf.py`: SJF Preemptive / SRTF
@@ -84,7 +91,9 @@ Contains common-contract implementations for all baseline scheduling policies:
 - `adaptive.py`: AI Adaptive Policy Engine
 
 ### 5. Metrics & Comparison Engine (`metrics/performance.py`)
+
 Computes standardized evaluation metrics:
+
 - Average Waiting Time
 - Average Turnaround Time
 - Average Response Time
@@ -93,7 +102,9 @@ Computes standardized evaluation metrics:
 - Total Context Switches
 
 ### 6. User Interface Layer (`app.py`)
+
 Provides interactive Streamlit UI with:
+
 - Dark theme styling with Arial graph font
 - Sidebar controls for `No of process`, `Arrival Time`, `Burst Time`, `Priority`
 - AI Prediction Insights tab
@@ -101,7 +112,9 @@ Provides interactive Streamlit UI with:
 - CSV Export function
 
 ### 7. Run Command
+
 To launch the Q-Shedular dashboard, run:
+
 ```powershell
 .venv\Scripts\streamlit.exe run app.py
 ```
