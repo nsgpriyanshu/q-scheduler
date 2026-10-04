@@ -1,8 +1,8 @@
-# Architecture Overview: Q-Shedular
+# Architecture Overview: Q-Schedular
 
 ## 1. Project Purpose
 
-This project implements **Q-Shedular**, an AI-powered adaptive CPU scheduler that selects the best scheduling policy based on workload characteristics. It compares adaptive AI scheduling against standard algorithms:
+This project implements **Q-Schedular**, an AI-powered adaptive CPU scheduler that selects the best scheduling policy based on workload characteristics. It compares adaptive AI scheduling against standard algorithms:
 
 - First-Come First-Served (FCFS)
 - Shortest Job First (SJF Non-preemptive)
@@ -113,7 +113,7 @@ Provides interactive Streamlit UI with:
 
 ### 7. Run Command
 
-To launch the Q-Shedular dashboard, run:
+To launch the Q-Schedular dashboard, run:
 
 ```powershell
 .venv\Scripts\streamlit.exe run app.py

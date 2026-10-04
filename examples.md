@@ -1,4 +1,4 @@
-# Presentation Demo Workload Examples (Q-Shedular)
+# Presentation Demo Workload Examples (Q-Schedular)
 
 Use these copy-pasteable process workload parameters during live presentations and demonstrations.
 
