@@ -1,10 +1,10 @@
-# Q-Schedular: AI-Powered Adaptive CPU Scheduler
+# Q-Scheduler: AI-Powered Adaptive CPU Scheduler
 
 ## Problem Statement
 
 Traditional CPU scheduling algorithms such as FCFS, SJF, Priority, and Round Robin use fixed rules to allocate CPU time. However, no single scheduling policy performs optimally across different workload types, such as CPU-intensive, I/O-intensive, interactive, bursty, and mixed workloads. Using an unsuitable policy can increase waiting time, response time, context-switch overhead, and reduce overall system efficiency.
 
-This project proposes **Q-Schedular**, an AI-powered workload-aware adaptive CPU scheduler that analyzes real-time process execution characteristics to dynamically select the optimal scheduling algorithm and tune execution parameters.
+This project proposes **Q-Scheduler**, an AI-powered workload-aware adaptive CPU scheduler that analyzes real-time process execution characteristics to dynamically select the optimal scheduling algorithm and tune execution parameters.
 
 ---
 
@@ -42,7 +42,7 @@ This project proposes **Q-Schedular**, an AI-powered workload-aware adaptive CPU
 
 ## How It Works In Real Life
 
-In real-life production environments (such as the Linux Kernel, Kubernetes container orchestrators, and OS hypervisors), **Q-Schedular** functions as an intelligent, telemetry-driven kernel decision layer:
+In real-life production environments (such as the Linux Kernel, Kubernetes container orchestrators, and OS hypervisors), **Q-Scheduler** functions as an intelligent, telemetry-driven kernel decision layer:
 
 ```text
 [ Real-World OS Process Execution ]
@@ -62,7 +62,7 @@ In real-life production environments (such as the Linux Kernel, Kubernetes conta
 
 ### 1. Pre-Trained Machine Learning Model
 
-- **Offline Training**: Q-Schedular uses a **pre-trained Machine Learning Classifier** (Random Forest / Decision Tree) trained offline on benchmark CPU execution traces across CPU-bound, I/O-bound, interactive, and priority-skewed scenarios.
+- **Offline Training**: Q-Scheduler uses a **pre-trained Machine Learning Classifier** (Random Forest / Decision Tree) trained offline on benchmark CPU execution traces across CPU-bound, I/O-bound, interactive, and priority-skewed scenarios.
 - **Sub-Millisecond Inference**: The pre-trained model weights are serialized and loaded into memory at startup. When a new batch of process threads arrives, model inference takes less than a microsecond, eliminating runtime latency overhead.
 
 ### 2. Kernel Telemetry Subsystem (eBPF / `/proc` / PCB)
@@ -88,7 +88,7 @@ In real-life production environments (such as the Linux Kernel, Kubernetes conta
 
 ## How It Works
 
-**Q-Schedular** operates in three sequential phases to dynamically adapt CPU scheduling based on incoming workload characteristics:
+**Q-Scheduler** operates in three sequential phases to dynamically adapt CPU scheduling based on incoming workload characteristics:
 
 ```text
 [ Step 1: Input Workload ]
@@ -102,7 +102,7 @@ In real-life production environments (such as the Linux Kernel, Kubernetes conta
 
 ### Step 1: Feature Vector Extraction
 
-When processes are loaded into the scheduler, Q-Schedular computes a 9-dimensional statistical feature vector:
+When processes are loaded into the scheduler, Q-Scheduler computes a 9-dimensional statistical feature vector:
 
 1. **Mean Burst Time ($\mu$)**: Average processing burst duration across all tasks.
 2. **Burst Coefficient of Variation ($CV = \sigma / \mu$)**: Quantifies burst time heterogeneity. High CV indicates a mixture of tiny and huge tasks.
@@ -155,14 +155,14 @@ The extracted feature vector is evaluated by a trained Scikit-Learn **Random For
   - `P2`: Arrival = 1.0, Burst = 4.0 ms, Priority = 1
   - `P3`: Arrival = 2.0, Burst = 5.0 ms, Priority = 1
 - **Feature Extraction**:
-  - Burst CV = $0.13 < 0.2$ (Low variance)# 📊 Presentation Deck: Q-Schedular
+  - Burst CV = $0.13 < 0.2$ (Low variance)# 📊 Presentation Deck: Q-Scheduler
 ## AI-Powered Workload-Aware Adaptive CPU Scheduler
 
 ---
 
 ## 📌 Slide 1: Title & Overview
 
-### **Q-Schedular: AI-Powered Adaptive CPU Scheduler**
+### **Q-Scheduler: AI-Powered Adaptive CPU Scheduler**
 *An Intelligent Telemetry-Driven Scheduling Framework for Next-Generation Operating Systems*
 
 - **Presenter**: Priyanshu & Team
@@ -206,7 +206,7 @@ The extracted feature vector is evaluated by a trained Scikit-Learn **Random For
 ```
 
 - In real operating systems (Linux, Kubernetes, Hypervisors), workload profiles shift dynamically between **CPU-heavy**, **I/O-heavy**, and **Interactive** tasks.
-- **Q-Schedular Solution**: An intelligent telemetry layer that analyzes process execution patterns and dynamically switches queue policies with **sub-millisecond inference overhead**.
+- **Q-Scheduler Solution**: An intelligent telemetry layer that analyzes process execution patterns and dynamically switches queue policies with **sub-millisecond inference overhead**.
 
 ---
 
@@ -238,7 +238,7 @@ The extracted feature vector is evaluated by a trained Scikit-Learn **Random For
 
 ### **9-Dimensional Statistical Feature Vector**
 
-To classify workloads accurately, Q-Schedular extracts real-time statistical features:
+To classify workloads accurately, Q-Scheduler extracts real-time statistical features:
 
 | Feature Metric | Mathematical Formula / Concept | Purpose |
 |---|---|---|
@@ -278,7 +278,7 @@ To classify workloads accurately, Q-Schedular extracts real-time statistical fea
 4. **Priority Scheduling (Non-preemptive)**: Higher priority tasks execute first.
 5. **Priority Preemptive**: Preempts current process if a higher-priority task arrives.
 6. **Round Robin (RR)**: Time-sliced execution with dynamically calculated Quantum.
-7. **Q-Schedular (AI Adaptive)**: Dynamically selects winning algorithm & quantum per workload batch.
+7. **Q-Scheduler (AI Adaptive)**: Dynamically selects winning algorithm & quantum per workload batch.
 
 ---
 
@@ -310,7 +310,7 @@ tests\test_simulation_core.py ..                                         [100%]
 
 ### **Comprehensive OS Metric Comparison**
 
-Q-Schedular evaluates all policies against 6 core performance indicators:
+Q-Scheduler evaluates all policies against 6 core performance indicators:
 
 1. **Average Waiting Time**: Time spent in ready queue before execution.
 2. **Average Turnaround Time**: Total elapsed time from arrival to completion.
@@ -359,7 +359,7 @@ Q-Schedular evaluates all policies against 6 core performance indicators:
 
 - **Conclusion**:
   - Static CPU scheduling algorithms fail under heterogeneous workload patterns.
-  - **Q-Schedular** successfully bridges Machine Learning telemetry with OS scheduling to achieve optimal turnaround times and CPU utilization.
+  - **Q-Scheduler** successfully bridges Machine Learning telemetry with OS scheduling to achieve optimal turnaround times and CPU utilization.
 - **Future Scope**:
   - Deep Reinforcement Learning (Q-Learning / PPO) for continuous online kernel policy tuning.
   - Linux Kernel Module integration via eBPF probes.
@@ -379,7 +379,7 @@ Q-Schedular evaluates all policies against 6 core performance indicators:
 
 ## Proposed AI Solution
 
-The core innovation of **Q-Schedular** is an Machine Learning classification pipeline that bridges workload feature extraction with dynamic scheduling policy selection:
+The core innovation of **Q-Scheduler** is an Machine Learning classification pipeline that bridges workload feature extraction with dynamic scheduling policy selection:
 
 ```text
 [ Process Workload Input ]
@@ -399,7 +399,7 @@ The core innovation of **Q-Schedular** is an Machine Learning classification pip
 
 ### 1. Workload Feature Vector
 
-For every incoming batch of process tasks, Q-Schedular extracts statistical metrics:
+For every incoming batch of process tasks, Q-Scheduler extracts statistical metrics:
 
 - **Mean Burst Time ($\mu$)**: Average processing burst duration.
 - **Coefficient of Variation ($CV = \sigma / \mu$)**: Burst time heterogeneity index.
@@ -417,7 +417,7 @@ For every incoming batch of process tasks, Q-Schedular extracts statistical metr
 
 ## Performance Metrics & Evaluation
 
-Q-Schedular is benchmarked against all classical scheduling policies across measurable operating metrics:
+Q-Scheduler is benchmarked against all classical scheduling policies across measurable operating metrics:
 
 - **Average Waiting Time**
 - **Average Turnaround Time**
@@ -428,7 +428,7 @@ Q-Schedular is benchmarked against all classical scheduling policies across meas
 
 ---
 
-## How to Run Q-Schedular Dashboard
+## How to Run Q-Scheduler Dashboard
 
 1. Launch the Streamlit application:
    ```powershell

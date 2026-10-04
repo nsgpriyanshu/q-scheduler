@@ -12,7 +12,7 @@ from ai.classifier import classify_workload
 # 1. STREAMLIT PAGE CONFIG & THEME SETUP
 # ==========================================
 st.set_page_config(
-    page_title="Q-Schedular",
+    page_title="Q-Scheduler",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -158,7 +158,7 @@ def get_plotly_dark_layout(title: str = "", height: int = 380):
 # 2. SIDEBAR INPUTS (NO OF PROCESS, ARRIVAL TIME, BURST TIME, PRIORITY)
 # ==========================================
 with st.sidebar:
-    st.markdown("## Q-Schedular")
+    st.markdown("## Q-Scheduler")
     st.caption("AI Adaptive CPU Scheduling Engine")
     st.divider()
 
@@ -251,7 +251,7 @@ ai_classification = classify_workload(processes)
 # ==========================================
 # 3. MAIN APP HEADER
 # ==========================================
-st.title("Q-Schedular")
+st.title("Q-Scheduler")
 st.markdown(
     "AI-Powered Adaptive CPU Scheduling Platform comparing AI prediction against FCFS, SJF (Preemptive/Non-preemptive), Priority (Preemptive/Non-preemptive), and Round Robin."
 )
